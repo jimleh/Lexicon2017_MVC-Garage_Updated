@@ -6,12 +6,14 @@ using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Web.Http;
+using System.Web.Http.Description;
 
 namespace MVCGarage_Updated.Controllers
 {
     public class GarageController : ApiController
     {
         GarageRepository repo;
+
         public GarageController()
         {
             repo = new GarageRepository();
@@ -22,11 +24,12 @@ namespace MVCGarage_Updated.Controllers
             return Ok(repo.GetAllVehicles());
         }
 
+        [ResponseType(typeof(VehicleViewModel))]
         public IHttpActionResult Get(int? id)
         {
             if(id == null)
             { 
-                return BadRequest();
+                return BadRequest("ID cannot be null!");
             }
 
             var vehicle = repo.GetVehicle(id.Value);
@@ -38,21 +41,29 @@ namespace MVCGarage_Updated.Controllers
             return Ok(vehicle);
         }
 
+        [ResponseType(typeof(VehicleType))]
+        public IHttpActionResult GetTypes()
+        {
+            return Ok(repo.GetVehicleTypes());
+        }
+
+        [ResponseType(typeof(VehicleViewModel))]
         public IHttpActionResult Post([FromBody]VehicleViewModel vm)
         {
             if(ModelState.IsValid)
             {
                 repo.AddVehicle(vm);
-                return Ok("Vehicle added successfully!");
+                return Ok("Vehicle added successfully! " + vm);
             }
-            return BadRequest("What are you doing?" + vm);
+            return BadRequest("ModelState is not valid!");
         }
 
-        public IHttpActionResult Put(int? id, [FromBody]Vehicle newVehicle)
+        [ResponseType(typeof(VehicleViewModel))]
+        public IHttpActionResult Put(int? id, [FromBody]VehicleViewModel vm)
         {
-            if (id == null || id != newVehicle.VehicleID || !ModelState.IsValid)
+            if (id == null || id != vm.ID || !ModelState.IsValid)
             {
-                return BadRequest("What are you doing?");
+                return BadRequest("Something went horribly wrong! " + vm);
             }
 
             var vehicle = repo.GetVehicle(id.Value);
@@ -61,16 +72,16 @@ namespace MVCGarage_Updated.Controllers
                 return NotFound();
             }
 
-            repo.EditVehicle(newVehicle);
+            repo.EditVehicle(vm);
 
-            return Ok("Vehicle Edited Successfully!");
+            return Ok("Vehicle Edited Successfully! " + vm);
         }
 
         public IHttpActionResult Delete(int? id)
         {
             if(id == null)
             {
-                return BadRequest("You need to provide and ID!");
+                return BadRequest("You need to provide an ID! " + id);
             }
 
             var vehicle = repo.GetVehicle(id.Value);

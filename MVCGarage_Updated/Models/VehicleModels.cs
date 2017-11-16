@@ -16,7 +16,7 @@ namespace MVCGarage_Updated.Models
         [Key, Display(Name="ID")]
         public int VehicleID { get; set; }
         [Required, Display(Name="Registration Number")]
-        public string VehicleNum { get; set; }
+        public string VehicleRegNum { get; set; }
         [Required, Display(Name = "Type")]
         public VehicleType VehicleType { get; set; }
         [Required, Display(Name = "Size")]
@@ -70,6 +70,19 @@ namespace MVCGarage_Updated.Models
         [Required]
         public string Reg { get; set; }
         [Required]
-        public VehicleType Type { get; set; }
+        public string Type { get; set; }
+        public string Date { get; set; }
+
+        public VehicleViewModel()
+        {
+            Date = DateTime.Now.ToString();
+        }
+        public VehicleViewModel(Vehicle vehicle)
+        {
+            ID = vehicle.VehicleID;
+            Reg = vehicle.VehicleRegNum;
+            Type = vehicle.VehicleType.ToString();
+            Date = vehicle.VehicleDate;
+        }
     }
 }

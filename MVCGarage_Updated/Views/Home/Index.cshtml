@@ -1,14 +1,14 @@
 ﻿<div ng-app="garageApp">
     <div class="jumbotron" ng-controller="garageController" ng-init="initData()">
-        <div class="form-group">
-            <form class="form-inline" ng-submit="postData()">
-                <input class="form-control" ng-model="Vehicle.VehicleNum" required placeholder="Registration Number" />
+        <div class="container form-group" id="input">
+            <form class="form-inline" ng-submit="checkForm()">
+                <input class="form-control" ng-model="vehicle.Reg" required placeholder="Registration Number" />
                 <select class="form-control" 
-                        ng-init="Vehicle.VehicleType" 
-                        ng-model="Vehicle.VehicleType"
+                        ng-init="vehicle.Type = 'Car'" 
+                        ng-model="vehicle.Type"
                         ng-options="type for type in types">
                 </select>
-                <input class="btn btn-success" type="submit" value="Add!" />
+                <input id="submitBtn" class="btn btn-success" type="submit" value="Add!" />
             </form>
         </div>
         <div class="body-content">
@@ -18,22 +18,27 @@
                         <th>ID</th>
                         <th>Reg #</th>
                         <th>Type</th>
-                        <th>Size</th>
                         <th>Date</th>
-                        <th></th>
+                        <th>Options</th>
                     </tr>
                 </thead>
                 <tbody>
                     <tr ng-repeat="vehicle in vehicles |filter:search| orderBy:sorter track by $index">
-                        <td>{{vehicle.VehicleID}}</td>
-                        <td>{{vehicle.VehicleNum}}</td>
-                        <td>{{vehicle.VehicleType}}</td>
-                        <td>{{vehicle.VehicleSize}}</td>
-                        <td>{{vehicle.VehicleDate}}</td>
+                        <td>{{vehicle.ID}}</td>
+                        <td>{{vehicle.Reg}}</td>
+                        <td>{{vehicle.Type}}</td>
+                        <td>{{vehicle.Date}}</td>
+                        <td>
+                        <a href="" ng-click="getDetails(vehicle.ID)">Details</a>
+                        | 
+                        <a href="" ng-click="editing(vehicle)">Edit</a>
+                        | 
+                        <a href="" ng-click="deleteData(vehicle.ID)">Delete</a></td>
                     </tr>
                 </tbody>
             </table>
         </div>
     </div>
 </div>
-
+<div class=""
+</div>

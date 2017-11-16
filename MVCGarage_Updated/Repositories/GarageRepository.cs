@@ -4,7 +4,6 @@ using System;
 using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
-using System.Web;
 
 namespace MVCGarage_Updated.Repositories
 {
@@ -16,9 +15,16 @@ namespace MVCGarage_Updated.Repositories
             context = new GarageContext();
         }
 
-        public IEnumerable<Vehicle> GetAllVehicles()
+        public IEnumerable<VehicleViewModel> GetAllVehicles()
         {
-            return context.Vehicles;
+            var vehicles = new List<VehicleViewModel>();
+
+            foreach(var vehicle in context.Vehicles)
+            {
+                vehicles.Add(new VehicleViewModel(vehicle));
+            }
+
+            return vehicles;
         }
 
         public Vehicle GetVehicle(int id)
@@ -26,27 +32,42 @@ namespace MVCGarage_Updated.Repositories
             return context.Vehicles.FirstOrDefault(v => v.VehicleID == id);
         }
 
+        public IEnumerable<string> GetVehicleTypes()
+        {
+            var types = new List<string>();
+            foreach(var type in Enum.GetValues(typeof(VehicleType)))
+            {
+                types.Add(type.ToString());
+            }
+
+            return types;
+        }
+
+        protected VehicleViewModel CreateViewModel(Vehicle vehicle)
+        {
+            return new VehicleViewModel(vehicle);
+        }
+
+        protected Vehicle ToVehicle(VehicleViewModel vm)
+        {
+            switch (vm.Type)
+            {
+                case "MC":
+                    return new MC { VehicleID = vm.ID, VehicleRegNum = vm.Reg, VehicleDate = vm.Date };
+                case "Car":
+                    return new Car { VehicleID = vm.ID, VehicleRegNum = vm.Reg, VehicleDate = vm.Date };
+                case "Truck":
+                    return new Truck { VehicleID = vm.ID, VehicleRegNum = vm.Reg, VehicleDate = vm.Date };
+                case "Bus":
+                    return new Bus { VehicleID = vm.ID, VehicleRegNum = vm.Reg, VehicleDate = vm.Date };
+                default:
+                    return null;
+            }
+        }
+
         public void AddVehicle(VehicleViewModel vm)
         {
-            Vehicle vehicle = null;
-            switch(vm.Type)
-            {
-                case VehicleType.MC:
-                    vehicle = new MC { VehicleID = vm.ID, VehicleNum = vm.Reg };
-                    break;
-                case VehicleType.Car:
-                    vehicle = new Car { VehicleID = vm.ID, VehicleNum = vm.Reg };
-                    break;
-                case VehicleType.Truck:
-                    vehicle = new Truck { VehicleID = vm.ID, VehicleNum = vm.Reg };
-                    break;
-                case VehicleType.Bus:
-                    vehicle = new Bus { VehicleID = vm.ID, VehicleNum = vm.Reg };
-                    break;
-                default:
-                    vehicle = null;
-                    break;
-            }
+            Vehicle vehicle = ToVehicle(vm);
 
             if(vehicle != null)
             {
@@ -60,8 +81,14 @@ namespace MVCGarage_Updated.Repositories
             context.Vehicles.Remove(vehicle);
             context.SaveChanges();
         }
-        public void EditVehicle(Vehicle vehicle)
+        public void EditVehicle(VehicleViewModel vm)
         {
+            var vehicle = GetVehicle(vm.ID);
+            var newVehicle = ToVehicle(vm);
+            foreach(var prop in vehicle.GetType().GetProperties())
+            {
+                prop.SetValue(vehicle, prop.GetValue(newVehicle));
+            }
             context.Entry(vehicle).State = EntityState.Modified;
             context.SaveChanges();
         }
