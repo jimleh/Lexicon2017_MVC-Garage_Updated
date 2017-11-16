@@ -38,14 +38,14 @@ namespace MVCGarage_Updated.Controllers
             return Ok(vehicle);
         }
 
-        public IHttpActionResult Post([FromBody]Vehicle vehicle)
+        public IHttpActionResult Post([FromBody]VehicleViewModel vm)
         {
             if(ModelState.IsValid)
             {
-                repo.AddVehicle(vehicle);
+                repo.AddVehicle(vm);
                 return Ok("Vehicle added successfully!");
             }
-            return BadRequest("What are you doing?" + vehicle.VehicleID + ":" + vehicle.VehicleNum + ":" + vehicle.VehicleSize + ":" + vehicle.VehicleType + ":" + vehicle.VehicleDate);
+            return BadRequest("What are you doing?" + vm);
         }
 
         public IHttpActionResult Put(int? id, [FromBody]Vehicle newVehicle)

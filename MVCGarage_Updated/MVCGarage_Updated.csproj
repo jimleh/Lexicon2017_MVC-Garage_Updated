@@ -164,7 +164,7 @@
       <DependentUpon>201711161323192_initial.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\Configuration.cs" />
-    <Compile Include="Models\Vehicle.cs" />
+    <Compile Include="Models\VehicleModels.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Repositories\GarageRepository.cs" />
   </ItemGroup>

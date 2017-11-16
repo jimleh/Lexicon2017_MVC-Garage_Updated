@@ -26,10 +26,34 @@ namespace MVCGarage_Updated.Repositories
             return context.Vehicles.FirstOrDefault(v => v.VehicleID == id);
         }
 
-        public void AddVehicle(Vehicle vehicle)
+        public void AddVehicle(VehicleViewModel vm)
         {
-            context.Vehicles.Add(vehicle);
-            context.SaveChanges();
+            Vehicle vehicle = null;
+            switch(vm.Type)
+            {
+                case VehicleType.MC:
+                    vehicle = new MC { VehicleID = vm.ID, VehicleNum = vm.Reg };
+                    break;
+                case VehicleType.Car:
+                    vehicle = new Car { VehicleID = vm.ID, VehicleNum = vm.Reg };
+                    break;
+                case VehicleType.Truck:
+                    vehicle = new Truck { VehicleID = vm.ID, VehicleNum = vm.Reg };
+                    break;
+                case VehicleType.Bus:
+                    vehicle = new Bus { VehicleID = vm.ID, VehicleNum = vm.Reg };
+                    break;
+                default:
+                    vehicle = null;
+                    break;
+            }
+
+            if(vehicle != null)
+            {
+                context.Vehicles.Add(vehicle);
+                context.SaveChanges();
+            }
+
         }
         public void RemoveVehicle(Vehicle vehicle)
         {

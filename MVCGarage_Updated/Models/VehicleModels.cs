@@ -8,7 +8,7 @@ namespace MVCGarage_Updated.Models
 {
     public enum VehicleType
     {
-        MC = 1, Car = 1, Truck = 2, Bus = 3
+        MC, Car, Truck, Bus
     }
 
     public class Vehicle
@@ -35,7 +35,7 @@ namespace MVCGarage_Updated.Models
         public MC()
         {
             this.VehicleType = VehicleType.MC;
-            VehicleSize = (int)this.VehicleType;
+            VehicleSize = 1;
         }
     }
     public class Car : Vehicle
@@ -43,7 +43,7 @@ namespace MVCGarage_Updated.Models
         public Car()
         {
             this.VehicleType = VehicleType.Car;
-            VehicleSize = (int)this.VehicleType;
+            VehicleSize = 1;
         }
     }
     public class Truck : Vehicle
@@ -51,7 +51,7 @@ namespace MVCGarage_Updated.Models
         public Truck()
         {
             this.VehicleType = VehicleType.Truck;
-            VehicleSize = (int)this.VehicleType;
+            VehicleSize = 2;
         }
     }
     public class Bus : Vehicle
@@ -59,7 +59,17 @@ namespace MVCGarage_Updated.Models
         public Bus()
         {
             this.VehicleType = VehicleType.Bus;
-            VehicleSize = (int)this.VehicleType;
+            VehicleSize = 3;
         }
+    }
+
+    public class VehicleViewModel
+    {
+        [Required]
+        public int ID { get; set; }
+        [Required]
+        public string Reg { get; set; }
+        [Required]
+        public VehicleType Type { get; set; }
     }
 }
