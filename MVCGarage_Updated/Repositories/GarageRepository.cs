@@ -10,21 +10,22 @@ namespace MVCGarage_Updated.Repositories
     public class GarageRepository
     {
         GarageContext context;
+        bool[, ,] parkingSpots;
         public GarageRepository()
         {
             context = new GarageContext();
+            parkingSpots = new bool[2, 10, 10];
+            InitParkingSpots();
         }
 
-        public IEnumerable<VehicleViewModel> GetAllVehicles()
+        public IEnumerable<Vehicle> GetAllVehicles()
         {
-            var vehicles = new List<VehicleViewModel>();
+            return context.Vehicles;
+        }
 
-            foreach(var vehicle in context.Vehicles)
-            {
-                vehicles.Add(new VehicleViewModel(vehicle));
-            }
-
-            return vehicles;
+        public IEnumerable<VehicleViewModel> GetAllVehiclesVM()
+        {
+            return GetAllVehicles().Select(v => new VehicleViewModel(v)).ToList();
         }
 
         public Vehicle GetVehicle(int id)
@@ -53,13 +54,13 @@ namespace MVCGarage_Updated.Repositories
             switch (vm.Type)
             {
                 case "MC":
-                    return new MC { VehicleID = vm.ID, VehicleRegNum = vm.Reg, VehicleDate = vm.Date };
+                    return new MC { VehicleID = vm.ID, VehicleRegNum = vm.Reg, VehicleDateParked = vm.Date, VehicleOwner = vm.Owner };
                 case "Car":
-                    return new Car { VehicleID = vm.ID, VehicleRegNum = vm.Reg, VehicleDate = vm.Date };
+                    return new Car { VehicleID = vm.ID, VehicleRegNum = vm.Reg, VehicleDateParked = vm.Date, VehicleOwner = vm.Owner };
                 case "Truck":
-                    return new Truck { VehicleID = vm.ID, VehicleRegNum = vm.Reg, VehicleDate = vm.Date };
+                    return new Truck { VehicleID = vm.ID, VehicleRegNum = vm.Reg, VehicleDateParked = vm.Date, VehicleOwner = vm.Owner };
                 case "Bus":
-                    return new Bus { VehicleID = vm.ID, VehicleRegNum = vm.Reg, VehicleDate = vm.Date };
+                    return new Bus { VehicleID = vm.ID, VehicleRegNum = vm.Reg, VehicleDateParked = vm.Date, VehicleOwner = vm.Owner };
                 default:
                     return null;
             }
@@ -68,16 +69,17 @@ namespace MVCGarage_Updated.Repositories
         public void AddVehicle(VehicleViewModel vm)
         {
             Vehicle vehicle = ToVehicle(vm);
+            vehicle.VehicleParkingSpot = GetFreeParkingSpot(vehicle.VehicleSize);
 
             if(vehicle != null)
             {
                 context.Vehicles.Add(vehicle);
                 context.SaveChanges();
             }
-
         }
         public void RemoveVehicle(Vehicle vehicle)
         {
+            FreeUpParkingSpots(vehicle.VehicleParkingSpot, vehicle.VehicleSize);
             context.Vehicles.Remove(vehicle);
             context.SaveChanges();
         }
@@ -91,6 +93,95 @@ namespace MVCGarage_Updated.Repositories
             }
             context.Entry(vehicle).State = EntityState.Modified;
             context.SaveChanges();
+        }
+
+        // Methods to handle parking spots
+        protected void InitParkingSpots()
+        {
+            int index = 0;
+            for (int i = 0; i < parkingSpots.GetLength(0); i++)
+            {
+                for (int j = 0; j < parkingSpots.GetLength(1); j++)
+                {
+                    for (int k = 0; k < parkingSpots.GetLength(2); k++)
+                    {
+                        index++;
+                        var tmp = context.Vehicles.FirstOrDefault(v => v.VehicleParkingSpot == index);
+                        if (tmp != null)
+                        {
+                            for (int l = 0; l < tmp.VehicleSize; l++)
+                            {
+                                parkingSpots[i, j, k + l] = true;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        protected int GetFreeParkingSpot(int size)
+        {
+            int index = 1;
+
+            for (int i = 0; i < parkingSpots.GetLength(0); i++)
+            {
+                for (int j = 0; j < parkingSpots.GetLength(1); j++)
+                {
+                    for (int k = 0; k < parkingSpots.GetLength(2); k++)
+                    {
+                        if (CheckIfVehicleCanFitInParkingSpot(i, j, k, size))
+                        {
+                            for (int l = 0; l < size; l++)
+                            {
+                                parkingSpots[i, j, k + l] = true;
+                            }
+                            return index;
+                        }
+                        index++;
+                    }
+                }
+            }
+            return -1;
+        }
+        protected bool CheckIfVehicleCanFitInParkingSpot(int x, int y, int start, int size)
+        {
+            for (int i = start; i < start + size; i++)
+            {
+                if (i >= parkingSpots.GetLength(2) || parkingSpots[x, y, i])
+                {
+                    return false;
+                }
+            }
+            return true;
+        }
+        protected void FreeUpParkingSpots(int spot, int size)
+        {
+            int index = 1;
+            for (int i = 0; i < parkingSpots.GetLength(0); i++)
+            {
+                for (int j = 0; j < parkingSpots.GetLength(1); j++)
+                {
+                    for (int k = 0; k < parkingSpots.GetLength(2); k++)
+                    {
+                        if(index == spot)
+                        {
+                            for(int l = k; l < size; l++)
+                            {
+                                parkingSpots[i, j, l] = false;
+                            }
+                        }
+                        index++;
+                    }
+                }
+            }
+        }
+
+        public GarageViewModel GetGarageViewModel()
+        {
+            return new GarageViewModel
+            {
+                ParkingSpots = parkingSpots,
+                Vehicles = GetAllVehiclesVM().ToList()
+            };
         }
     }
 }

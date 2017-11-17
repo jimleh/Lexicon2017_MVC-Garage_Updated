@@ -1,8 +1,21 @@
 ﻿<div ng-app="garageApp">
     <div class="jumbotron" ng-controller="garageController" ng-init="initData()">
+        <div class="container">
+            <input id="garageBtn" class="btn btn-default" type="button" ng-click="getGarage()" value="Show Garage" />
+            <div id="garageTableDiv" class="hidden disabled">
+                <table class="table" ng-repeat="table in garage track by $index">
+                    <caption>{{$index == 0 ? "Base Floor" : "Floor: " + $index}}</caption>
+                    <tr ng-repeat="row in table track by $index">
+                        <td ng-repeat="column in row track by $index" ng-if="column"><span class="label label-danger">Occupied</span></td>
+                        <td ng-repeat="column in row track by $index" ng-if="!column"><span class="label label-success">Available</span></td>
+                    </tr>
+                </table>
+            </div>
+        </div>
         <div class="container form-group" id="input">
             <form class="form-inline" ng-submit="checkForm()">
                 <input class="form-control" ng-model="vehicle.Reg" required placeholder="Registration Number" />
+                <input class="form-control" ng-model="vehicle.Owner" required placeholder="Owner" />
                 <select class="form-control" 
                         ng-init="vehicle.Type = 'Car'" 
                         ng-model="vehicle.Type"
@@ -18,6 +31,7 @@
                         <th>ID</th>
                         <th>Reg #</th>
                         <th>Type</th>
+                        <th>Spot</th>
                         <th>Date</th>
                         <th>Options</th>
                     </tr>
@@ -27,18 +41,19 @@
                         <td>{{vehicle.ID}}</td>
                         <td>{{vehicle.Reg}}</td>
                         <td>{{vehicle.Type}}</td>
+                        <td>{{vehicle.Spot}}</td>
                         <td>{{vehicle.Date}}</td>
                         <td>
-                        <a href="" ng-click="getDetails(vehicle.ID)">Details</a>
+                        <input ng-click="getDetails(vehicle)" class="btn btn-info" type="button" value="Details" />
                         | 
-                        <a href="" ng-click="editing(vehicle)">Edit</a>
+                        <input ng-click="editing(vehicle)" class="btn btn-warning" type="button" value="Edit" />
                         | 
-                        <a href="" ng-click="deleteData(vehicle.ID)">Delete</a></td>
+                        <input ng-click="deleteData(vehicle.ID)" class="btn btn-danger" type="button" value="Delete" />
                     </tr>
                 </tbody>
             </table>
         </div>
     </div>
 </div>
-<div class=""
+<div class="">
 </div>

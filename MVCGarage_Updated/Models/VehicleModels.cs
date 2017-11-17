@@ -17,16 +17,24 @@ namespace MVCGarage_Updated.Models
         public int VehicleID { get; set; }
         [Required, Display(Name="Registration Number")]
         public string VehicleRegNum { get; set; }
+        [Required, Display(Name = "Owner")]
+        public string VehicleOwner { get; set; }
         [Required, Display(Name = "Type")]
         public VehicleType VehicleType { get; set; }
         [Required, Display(Name = "Size")]
         public int VehicleSize { get; set; }
-        [Required, Display(Name="Date")]
-        public string VehicleDate { get; set; }
+        [Required, Display(Name="Date Parked")]
+        public string VehicleDateParked { get; set; }
+        [Required, Display(Name="Parking Spot")]
+        public int VehicleParkingSpot { get; set; }
+        [Display(Name = "Fee")]
+        public double VehicleFee { get; set; }
+        [Display(Name = "Date Checkout")]
+        public string VehicleDateCheckout { get; set; }
 
         public Vehicle()
         {
-            VehicleDate = DateTime.Now.ToString();
+            VehicleDateParked = DateTime.Now.ToString();
         }
     }
 
@@ -65,13 +73,12 @@ namespace MVCGarage_Updated.Models
 
     public class VehicleViewModel
     {
-        [Required]
         public int ID { get; set; }
-        [Required]
         public string Reg { get; set; }
-        [Required]
+        public string Owner { get; set; }
         public string Type { get; set; }
         public string Date { get; set; }
+        public int Spot { get; set; }
 
         public VehicleViewModel()
         {
@@ -82,7 +89,9 @@ namespace MVCGarage_Updated.Models
             ID = vehicle.VehicleID;
             Reg = vehicle.VehicleRegNum;
             Type = vehicle.VehicleType.ToString();
-            Date = vehicle.VehicleDate;
+            Date = vehicle.VehicleDateParked;
+            Spot = vehicle.VehicleParkingSpot;
+            Owner = vehicle.VehicleOwner;
         }
     }
 }

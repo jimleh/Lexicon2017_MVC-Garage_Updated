@@ -4,10 +4,10 @@
     var garageController = function ($scope, $http, $compile) {
 
         var getData = function () {
-            $http.get("../api/garage/get")
+            $http.get("../api/garage/getgarage")
                 .then(function (response) {
-                    $scope.vehicles = response.data;
-                    console.log(response.data);
+                    $scope.garage = response.data.ParkingSpots;
+                    $scope.vehicles = response.data.Vehicles;
                 });
         };
         var postData = function () {
@@ -15,6 +15,9 @@
                 .then(function (response) {
                     console.log(response.data);
                     getData();
+                    $scope.vehicle = {
+                        Type: "Car"
+                    };
                 });
         };
         var editData = function () {
@@ -39,6 +42,7 @@
             getData();
             getTypes();
         };
+
         $scope.deleteData = function (id) {
             $http.delete("../api/garage/delete/" + id)
                 .then(function (response) {
@@ -54,7 +58,9 @@
                 $scope.edit = false;
                 input.classList.remove("alert-success");
                 submitBtn.value = "Add!"
-                $scope.vehicle = null;
+                $scope.vehicle = {
+                    Type: "Car"
+                };
                 // remove abort button
                 var d = document.getElementById("abortBtn");
                 d.parentNode.removeChild(d);
@@ -72,9 +78,8 @@
             }
         };
 
-        $scope.getDetails = function (id) {
+        $scope.getDetails = function (vehicle) {
             var input = document.getElementById("input");
-            var vehicle = $scope.vehicles[id];
             if (!$scope.details) {
                 $scope.details = true;
                 var div = angular.element(input);
@@ -87,15 +92,13 @@
                                     + '<dd>' + vehicle.Reg + '</dd>'
                                     + '<dt>Type</dt>'
                                     + '<dd>' + vehicle.Type + '</dd>'
+                                    + '<dt>Parking Spot</dt>'
+                                    + '<dd>' + vehicle.Spot + '</dd>'
                                     + '<dt>Date</dt>'
                                     + '<dd>' + vehicle.Date + '</dd>'
                                 + '</dl>'
                                 + '<div class="container alert-info">'
                                     + '<input ng-click="getDetails()" class="btn btn-success" type="button" value="Return!" />'
-                                    + ' | ' 
-                                    + '<input ng-click="editing()" class="btn btn-info" type="button" value="Edit!" />'
-                                    + ' | ' 
-                                    + '<input ng-click="deleteData()" class="btn btn-danger" type="button" value="Delete!" />'
                                 + '</div>'
                             + '</div>')($scope));     
             }
@@ -113,9 +116,30 @@
                 document.getElementById("submitBtn").value = "Add!"
             }
             else {
+                $scope.vehicle.ID = 0;
+                $scope.vehicle.Spot = 0;
                 postData();
             }
             $scope.edit = false;
+        };
+
+        $scope.getGarage = function () {
+            var garageBtn = document.getElementById("garageBtn");
+            var garageTableDiv = document.getElementById("garageTableDiv");
+            if (!$scope.showGarage) {
+                $scope.showGarage = true;
+                garageBtn.value = "Hide Garage";
+                garageTableDiv.classList.remove("hidden");
+                garageTableDiv.classList.remove("disabled");
+            }
+            else {
+                $scope.showGarage = false;
+                garageBtn.value = "Show Garage";
+                garageTableDiv.classList.add("hidden");
+                garageTableDiv.classList.add("disabled");
+                //var gargaeTableDiv = document.getElementById("garageTableDiv");
+                //gargaeTableDiv.parentNode.removeChild(gargaeTableDiv);
+            }
         };
     };
 

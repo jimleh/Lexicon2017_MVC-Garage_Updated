@@ -21,7 +21,7 @@ namespace MVCGarage_Updated.Controllers
 
         public IHttpActionResult Get()
         {
-            return Ok(repo.GetAllVehicles());
+            return Ok(repo.GetAllVehiclesVM());
         }
 
         [ResponseType(typeof(VehicleViewModel))]
@@ -45,6 +45,12 @@ namespace MVCGarage_Updated.Controllers
         public IHttpActionResult GetTypes()
         {
             return Ok(repo.GetVehicleTypes());
+        }
+
+        [ResponseType(typeof(GarageViewModel))]
+        public IHttpActionResult GetGarage()
+        {
+            return Ok(repo.GetGarageViewModel());
         }
 
         [ResponseType(typeof(VehicleViewModel))]
